@@ -2,6 +2,6 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <stdio.h>
-#include "Shaders.h"
+#include <iostream>
+#include "Shader.h"
 #include "Log.h"

@@ -30,6 +30,9 @@
     <ClCompile Include="src\LearnOpenGL\DV-Hello_Triangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\LearnOpenGL\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\LearnOpenGL\Core.h">
@@ -41,5 +44,12 @@
     <ClInclude Include="src\LearnOpenGL\Shaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\LearnOpenGL\Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\LearnOpenGL\shaders\shader.vs" />
+    <None Include="src\LearnOpenGL\shaders\shader.fs" />
   </ItemGroup>
 </Project>

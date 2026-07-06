@@ -28,7 +28,7 @@ int main() {
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
 #endif
-
+	
 	// GLFW: Window creation.
 	// ----------------------
 	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
@@ -51,66 +51,51 @@ int main() {
 		return -1;
 	}
 
+
 	// Tell OpenGL the size of the RENDERING window.
 	// ---------------------------------------------
 	glViewport(0, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
 
 	// Create a shader program for the renderer to use.
 	// ------------------------------------------------
-	unsigned int vertexShader[2];
-	vertexShader[0] = Durik::Shaders::CompileVertexShader(0);
-	vertexShader[1] = Durik::Shaders::CompileVertexShader(0);
-	unsigned int fragShader[2]; 
-	fragShader[0] = Durik::Shaders::CompileFragShader(0);
-	fragShader[1] = Durik::Shaders::CompileFragShader(1);
-	unsigned int shaderProgram[2];
-	shaderProgram[0] = Durik::Shaders::CreateShaderProgram(vertexShader[0], fragShader[0]);
-	shaderProgram[1] = Durik::Shaders::CreateShaderProgram(vertexShader[1], fragShader[1]);
-	DV_TRACE("Shader program created, ID: {}", shaderProgram[0]);
-	DV_TRACE("Shader program created, ID: {}", shaderProgram[1]);
+	Durik::Shader myShader("shaders/shader.vs","shaders/shader.fs");
+	myShader.useProgram();
+
+	float timeValue{};
+	float greenValue{};
+	int vertexColorLocation{};
 
 	// Creating the triangle.
 	// ------------------------
 	// Create some vertex data
-	float vertices1[]{	// right triangle
-		 0.0f,  0.0f, 0.0f, // vertex #1 (x, y, z)  
-		 0.2f,  0.5f, 0.0f, // #2  
-		 0.2f,  0.0f, 0.0f  // #3 
-	};
-	float vertices2[]{	// left triangle
-		 0.0f, 0.0f, 0.0f,
-		-0.2f, 0.5f, 0.0f,
-		-0.2f, 0.0f, 0.0f
+	float vertices[]{	// Triangle #1
+		// positions		 // colors
+		 0.0f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+		 0.2f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+		 0.2f,  0.0f, 0.0f,  0.0f, 0.0f, 1.0f
 	};
 	// Indicate indexes to use (only 3 vertices in this case)
 	unsigned int indices[] = {
 		0, 1, 2,   // triangle
 	};
 	// Create the buffer objects. Since we have indices, we have an element buffer object (EBO)
-	unsigned int VBO[2], EBO[2], VAO[2];
-	glGenBuffers(2, VBO);
-	glGenBuffers(2, EBO);
-	glGenVertexArrays(2, VAO);
+	unsigned int VBO, EBO, VAO;
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+	glGenVertexArrays(1, &VAO);
 	// Bind the vertex buffer object, then copy in the vertices data
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	// Bind the vertex array object
-	glBindVertexArray(VAO[0]);
+	glBindVertexArray(VAO);
 	// Bind the element buffer object (note: since VAO is binded it will store the EBO data)
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[0]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	// Set the vertex attribute pointers
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-
-	// Repeat?
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
-	glBindVertexArray(VAO[1]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+	glEnableVertexAttribArray(0); // Position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1); // Color attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
 
 	// Render loop.
 	// ------------
@@ -122,12 +107,9 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// Draw stuff.
-		glUseProgram(shaderProgram[0]);
-		glBindVertexArray(VAO[0]);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-		glUseProgram(shaderProgram[1]);
-		glBindVertexArray(VAO[1]);
+		// Draw triangle.
+		myShader.useProgram();
+		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 		// GLFW: Swap buffers and poll events.
@@ -139,13 +121,10 @@ int main() {
 	// De-allocate unneeded resources.
 	// -------------------------------
 	DV_TRACE("Deleting buffers.");
-	glDeleteBuffers(2, VBO);
-	glDeleteBuffers(2, EBO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 	DV_TRACE("Deleting vertex arrays.");
-	glDeleteVertexArrays(2, VAO);
-	DV_TRACE("Deleting programs.");
-	glDeleteProgram(shaderProgram[0]);
-	glDeleteProgram(shaderProgram[1]);
+	glDeleteVertexArrays(1, &VAO);
 
 	// GLFW: Delete all allocated GLFW resources before exit.
 	// ------------------------------------------------------

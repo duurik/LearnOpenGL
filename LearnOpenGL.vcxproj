@@ -88,6 +88,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\LearnOpenGL\Shader.cpp" />
     <ClCompile Include="src\LearnOpenGL\DV-Hello_Triangle.cpp" />
     <ClCompile Include="src\LearnOpenGL\Shaders.cpp" />
     <ClCompile Include="src\glad.c" />
@@ -95,9 +96,19 @@
     <ClCompile Include="src\LearnOpenGL\learnOpenGL.com_source\LOGL-Hello_Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\LearnOpenGL\Shader.h" />
     <ClInclude Include="src\LearnOpenGL\Shaders.h" />
     <ClInclude Include="src\LearnOpenGL\Core.h" />
     <ClInclude Include="src\LearnOpenGL\Log.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\LearnOpenGL\shaders\shader.fs" />
+    <None Include="src\LearnOpenGL\shaders\shader.vs">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
