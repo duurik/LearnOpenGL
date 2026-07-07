@@ -21,7 +21,7 @@ std::string Durik::Shader::loadFile(const std::string& path) {
 		DV_CRIT("Failed to load file. Abort.");
 		return "";
 	}
-	else DV_TRACE("File loaded.");
+	else DV_INFO("File loaded successfully.");
 	stream << file.rdbuf();
 	// Check if badbit and failbit
 	if (file.bad()) {

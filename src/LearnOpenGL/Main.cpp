@@ -61,22 +61,20 @@ int main() {
 	Durik::Shader myShader("shaders/shader.vs","shaders/shader.fs");
 	myShader.useProgram();
 
-	float timeValue{};
-	float greenValue{};
-	int vertexColorLocation{};
-
-	// Creating the triangle.
-	// ------------------------
+	// Creating a Shape.
+	// ----------------------
 	// Create some vertex data
-	float vertices[]{	// Triangle #1
-		// positions		 // colors
-		 0.0f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
-		 0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-		-0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
+	float vertices[]{
+		// positions		 // colors			// texture coor
+		-0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,	0.0f, 1.0f,
+		 0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,	1.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,	1.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,  1.0f, 1.0f, 0.0f,	0.0f, 0.0f
 	};
 	// Indicate indexes to use (only 3 vertices in this case)
 	unsigned int indices[] = {
-		0, 1, 2,   // triangle
+		0, 1, 2,
+		0, 2, 3
 	};
 	// Create the buffer objects. Since we have indices, we have an element buffer object (EBO)
 	unsigned int VBO, EBO, VAO;
@@ -93,13 +91,57 @@ int main() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	// Set the vertex attribute pointers
 	glEnableVertexAttribArray(0); // Position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1); // Color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2); // Texture attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
+	// Generating textures.
+	// ---------------------
+	unsigned int texture0, texture1;
+	glGenTextures(1, &texture0);
+	glGenTextures(1, &texture1);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* data = stbi_load("textures/container_wood_01.jpg", &width, &height, &nrChannels, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		DV_ERROR("Failed to load texture \"container_wood_01.jpg\".");
+	}
+	stbi_image_free(data);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	data = stbi_load("textures/awesomeface.png", &width, &height, &nrChannels, 0);
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		DV_ERROR("Failed to load texture.\"awesomeface.png\"");
+	}
+	stbi_image_free(data);
+
+	glUniform1i(glGetUniformLocation(myShader.ID, "texture0"), 0);
+	myShader.setInt("texture1", 1);
 
 	// Render loop.
 	// ------------
-	float horzOffset{};
+	float Offset{};
 	while (!glfwWindowShouldClose(window)) {
 		// Process user input.
 		processInput(window);
@@ -110,11 +152,11 @@ int main() {
 
 		// Draw triangle.
 		myShader.useProgram();
-		horzOffset += 0.001f;
-		if (horzOffset >= 1.0f) horzOffset = 0.0f;
-		myShader.setFloat("horzOff", horzOffset);
+		Offset += 0.001f;
+		if (Offset >= 1.0f) Offset = 0.0f;
+		myShader.setFloat("posOff", Offset);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		// GLFW: Swap buffers and poll events.
 		glfwSwapBuffers(window);

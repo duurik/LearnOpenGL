@@ -5,3 +5,4 @@
 #include <iostream>
 #include "Shader.h"
 #include "Log.h"
+#include "STB/stb_image.h"

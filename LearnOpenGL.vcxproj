@@ -92,6 +92,7 @@
     <ClCompile Include="src\LearnOpenGL\Main.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\LearnOpenGL\Log.cpp" />
+    <ClCompile Include="src\LearnOpenGL\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\LearnOpenGL\Shader.h" />
@@ -106,6 +107,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\LearnOpenGL\textures\awesomeface.png" />
+    <Image Include="src\LearnOpenGL\textures\container_wood_01.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
