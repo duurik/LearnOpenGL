@@ -89,7 +89,7 @@ void Durik::Shader::checkCompileErrors(unsigned int ref, const std::string& type
 		}
 	}
 	else
-		DV_ERROR("ERROR::INVALID_PARAMETERS::checkCompileErrors()");
+		DV_ERROR("ERROR::INVALID_PARAMETER::checkCompileErrors()");
 }
 
 // Public methods.

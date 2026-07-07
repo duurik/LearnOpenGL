@@ -70,9 +70,9 @@ int main() {
 	// Create some vertex data
 	float vertices[]{	// Triangle #1
 		// positions		 // colors
-		 0.0f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-		 0.2f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
-		 0.2f,  0.0f, 0.0f,  0.0f, 0.0f, 1.0f
+		 0.0f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,
+		-0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
 	};
 	// Indicate indexes to use (only 3 vertices in this case)
 	unsigned int indices[] = {
@@ -99,6 +99,7 @@ int main() {
 
 	// Render loop.
 	// ------------
+	float horzOffset{};
 	while (!glfwWindowShouldClose(window)) {
 		// Process user input.
 		processInput(window);
@@ -109,6 +110,9 @@ int main() {
 
 		// Draw triangle.
 		myShader.useProgram();
+		horzOffset += 0.001f;
+		if (horzOffset >= 1.0f) horzOffset = 0.0f;
+		myShader.setFloat("horzOff", horzOffset);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
@@ -137,7 +141,6 @@ int main() {
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
-
 void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);

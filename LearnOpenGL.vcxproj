@@ -90,14 +90,11 @@
   <ItemGroup>
     <ClCompile Include="src\LearnOpenGL\Shader.cpp" />
     <ClCompile Include="src\LearnOpenGL\Main.cpp" />
-    <ClCompile Include="src\LearnOpenGL\Shaders.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\LearnOpenGL\Log.cpp" />
-    <ClCompile Include="src\LearnOpenGL\learnOpenGL.com_source\LOGL-Hello_Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\LearnOpenGL\Shader.h" />
-    <ClInclude Include="src\LearnOpenGL\Shaders.h" />
     <ClInclude Include="src\LearnOpenGL\Core.h" />
     <ClInclude Include="src\LearnOpenGL\Log.h" />
   </ItemGroup>
